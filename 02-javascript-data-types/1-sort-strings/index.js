@@ -5,12 +5,14 @@
  * @returns {string[]}
  */
 export function sortStrings(arr, param = 'asc') {
-    let rus = arr.filter( s => /^[а-яёА-ЯЁ]/.test(s) );
-    let lat = arr.filter( s => /^[a-zA-Z]/.test(s) );
+  const dir = (param == 'asc') ? 1 : -1;
 
-    let res1 = (param == 'asc') ? rus.sort( (a, b) => a.localeCompare(b, 'ru', {caseFirst: "upper"}) ) : (param == 'desc') ? rus.reverse().sort( (a, b) => b.localeCompare(a, 'ru', {sensitivity: "variant"}) ) : arr;
+  const sortArr = [...arr].sort((a, b) => {
+    return dir * a.localeCompare(b, ['ru', 'en'], { caseFirst: 'upper' });
+  });
 
-    let res2 = (param == 'asc') ? lat.sort( (a, b) => a.localeCompare(b, 'en', {caseFirst: "upper"}) ) : (param == 'desc') ? lat.reverse().sort( (a, b) => b.localeCompare(a, 'en', {sensitivity: "variant"}) ) : arr;
-
-    return param === 'asc' ? [...res1, ...res2] : [...res2, ...res1];
+  return sortArr;
 }
+
+sortStrings(['b', 'a', 'c'], 'asc'); // ['a', 'b', 'c']
+sortStrings(['b', 'a', 'c'], 'desc'); // ['c', 'b', 'a']
