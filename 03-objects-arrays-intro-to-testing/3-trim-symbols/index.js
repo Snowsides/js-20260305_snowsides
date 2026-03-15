@@ -23,5 +23,7 @@ export function trimSymbols(string, size) {
         }
       i++;
     }
+
     return res.join('');
 }
+
