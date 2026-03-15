@@ -23,8 +23,5 @@ export function trimSymbols(string, size) {
         }
       i++;
     }
-
     return res.join('');
 }
-
-trimSymbols('xxxaaxx', 1); //xax
