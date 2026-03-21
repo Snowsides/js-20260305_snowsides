@@ -29,7 +29,9 @@ export default class ColumnChart {
       // this.destroy();
     } 
 
-    update() {
+    update(data?: number[]) {
+      if (data) this.data = data;
+
       const res = (data: number[]) => {
         const maxValue = Math.max(...this.data);
         const scale = this.chartHeight / maxValue;
@@ -39,6 +41,7 @@ export default class ColumnChart {
             return { value, percent };
         } );
       };
+
       const isLoading = (!this.value || this.data.length === 0) ? ' column-chart_loading' : '';
 
       this.element = createElement(`
