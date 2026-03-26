@@ -1,12 +1,8 @@
 import { createElement } from "../../shared/utils/create-element";
 
 interface Options {
-  target?: HTMLElement;
-  message?: string;
-  options?: {
-    duration?: number;
-    type?: string;
-  };
+  duration?: number;
+  type?: string;
 }
 
 export default class NotificationMessage {
