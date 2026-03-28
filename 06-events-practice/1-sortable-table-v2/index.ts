@@ -174,10 +174,10 @@ export default class SortableTable {
   }
     
   getSubElements(element: HTMLElement): Record<string, HTMLElement> {
-    const elements = element.querySelectorAll('[data-element]');
+    const elements = element.querySelectorAll<HTMLElement>('[data-element]');
     return [...elements].reduce((acc, subElement) => {
       const name = subElement.dataset.element as string;
-      acc[name] = subElement as HTMLElement;
+      acc[name] = subElement;
       return acc;
     }, {} as Record<string, HTMLElement>);
   }
