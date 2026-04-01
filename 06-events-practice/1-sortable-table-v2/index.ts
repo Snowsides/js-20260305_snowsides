@@ -26,12 +26,7 @@ export default class SortableTable {
   public element: HTMLElement | undefined;
   public headersConfig: SortableTableHeader[] = [];
   public data: SortableTableData[] = [];
-  public id: string = '';
-  public title: string = '';
   public isSortLocally: boolean = true;
-  public sortable: boolean = false;
-  public sortType: 'string' | 'number' | 'custom' = 'string';
-  public template: (value: string | number) => string = (value) => `<div class="sortable-table__cell sortable-table__sort-arrow">${value}</div>`;
   public subElements: Record<string, HTMLElement> = {};
   public sortFunctions: {
     string: (a: string, b: string) => number;
@@ -46,15 +41,15 @@ export default class SortableTable {
   
 
   constructor(headersConfig: SortableTableHeader[] = [], { data = [], sorted, isSortLocally = true }: Options = {}) {
-  this.headersConfig = headersConfig;
-  this.data = data;
-  this.isSortLocally = isSortLocally;
-  this.currentSort = sorted ?? null;
-  this.render();
-  if (sorted) {
-    this.sort(sorted.id, sorted.order);
+    this.headersConfig = headersConfig;
+    this.data = data;
+    this.isSortLocally = isSortLocally;
+    this.currentSort = sorted ?? null;
+    this.render();
+    if (sorted) {
+      this.sort(sorted.id, sorted.order);
+    }
   }
-}
 
   render() {
     const wrapper = document.createElement('div');
@@ -69,32 +64,21 @@ export default class SortableTable {
     const column = this.headersConfig.find(item => item.id === field);
     if (!column || !column.sortable) return;
 
-    const sortType = column.sortType ?? 'string';
-    const sortedData = [...this.data].sort((a, b) => {
-    const val1 = a[field];
-    const val2 = b[field];
-
-    const dir = order === 'asc' ? 1 : -1;
-
-    if (sortType === 'number') {
-      return dir * this.sortFunctions.number(Number(val1), Number(val2));
+    if (this.isSortLocally) {
+      this.sortOnClient(field, order);
+    } else {
+      this.sortOnServer(field, order);
     }
-    if (sortType === 'custom' && column.customSorting) {
-      return dir * column.customSorting(a, b);
-    }
-    return dir * this.sortFunctions.string(String(val1), String(val2));
-  });
-
-    this.updateTableBody(sortedData);
 
     const allColumns = this.element?.querySelectorAll('.sortable-table__cell[data-id]');
           allColumns?.forEach(col => delete (col as HTMLElement).dataset.order);
+
     const activeColumn = this.element?.querySelector( `.sortable-table__cell[data-id="${field}"]` ) as HTMLElement | null;
+
     if (activeColumn) {
       activeColumn.dataset.order = order;
 
       let arrow = this.element?.querySelector('[data-element="arrow"]');
-
       if (!arrow) {
         const span = document.createElement('span');
         span.dataset.element = 'arrow';
@@ -131,14 +115,12 @@ export default class SortableTable {
 
   }
 
-
   updateTableBody(data: SortableTableData[]) {
     const body = this.subElements.body;
     if (body) {
       body.innerHTML = data.map(item => this.getRowTemplate(item)).join('');
     }
   }
-
 
   addEventListeners() {
     this.element?.addEventListener('pointerdown', this.onHeaderClick);
@@ -205,6 +187,7 @@ export default class SortableTable {
   }
 
   destroy() {
+    this.element?.removeEventListener('pointerdown', this.onHeaderClick);
     this.remove();
     this.element = undefined;
     this.subElements = {};
