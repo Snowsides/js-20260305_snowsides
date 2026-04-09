@@ -76,7 +76,7 @@ export default class ColumnChart {
           </div>
           <div class="column-chart__container">
             <div data-element="header" class="column-chart__header">
-              ${this.formatHeading(this.value)}]]
+              ${this.formatHeading(this.value)}
             </div>
             <div data-element="body" class="column-chart__chart">
               ${this.getChartColumns(this.data)}
@@ -90,7 +90,7 @@ export default class ColumnChart {
       }
 
       this.element = newElement;
-      
+
       return this.element;
     }
 
